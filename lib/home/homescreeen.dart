@@ -16,6 +16,9 @@ class _HomescreenState extends State<Homescreen> {
     TextEditingController txtName = TextEditingController();
     TextEditingController txtPass = TextEditingController();
 
+    TextEditingController name = TextEditingController();
+    TextEditingController pass = TextEditingController();
+
     return SafeArea(
       child: Scaffold(
         body: Column(
@@ -23,14 +26,27 @@ class _HomescreenState extends State<Homescreen> {
           children: [
             TextField(controller: txtName,),
             TextField(controller: txtPass,),
-            ElevatedButton(onPressed: () {
-              addData();
+            ElevatedButton(onPressed: () async {
+              Map m1 = await getData();
+              if(m1['name']==txtName.text && m1['pass']==txtPass.text)
+              {
+                SnackBar snackBar = SnackBar(content: Text("Success"),backgroundColor: Colors.green,);
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              }
+              else
+                {
+                  SnackBar snackBar = SnackBar(content: Text("Failed !"),backgroundColor: Colors.red,);
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
+
             }, child: Text("Login"),),
 
-            TextField(),
-            TextField(),
-            ElevatedButton(onPressed: () {
-
+            TextField(controller: name,),
+            TextField(controller: pass,),
+            ElevatedButton(onPressed: ()  {
+              addData(name.text,pass.text);
+              name.clear();
+              pass.clear();
             }, child: Text("SignIn"),),
           ],
         ),
@@ -40,13 +56,12 @@ class _HomescreenState extends State<Homescreen> {
 }
 
 
-String? name,password;
 
-Future<void> addData()
+Future<void> addData(String name , String pass)
 async {
   SharedPreferences s1 =  await SharedPreferences.getInstance();
-  s1.setString('name', name!);
-  s1.setString('pass', password!);
+  s1.setString('name', name);
+  s1.setString('pass', pass);
 }
 
 Future<Map> getData()
